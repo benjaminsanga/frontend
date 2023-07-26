@@ -4,11 +4,13 @@ import './css/App.css';
 // import TrafficMap from './TrafficMap'
 import './css/traffic.css'
 import {MapContainer, TileLayer, Marker, Popup} from 'react-leaflet'
+import TrafficMap from './TrafficMap';
 
 function App() {
   // const position = [51.505, -0.09]
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
+  const [showResult, setShowResult] = useState(false)
 
   const handleSearch = async (e) => {
     e.preventDefault()
@@ -18,14 +20,16 @@ function App() {
     } catch (error) {
       console.error('Error fetching traffic data:', error);
     }
+    setShowResult(true)
   }
 
   return (
     <div className="App">
       <header className="App-header">
         <h3>Traffic Detection System</h3>
+        <a href='/' className='App-link'>Home</a>
       </header>
-      <div id='main'>
+      {!showResult && <div id='main'>
         <div className='route-form'>
           <p>Enter your current location and destination</p>
           <form>
@@ -40,20 +44,19 @@ function App() {
             <p>Results of congestion on path show here after submitting form</p> */}
           </div>
         </div>
-        <MapContainer center={[9.8965, 8.8583]} zoom={13} scrollWheelZoom={false} id='map'>
+        <MapContainer center={[9.8705, 8.8883]} zoom={14} scrollWheelZoom={false} id='map'>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <Marker position={[51.505, -0.09]}>
+          <Marker position={[9.8705, 8.8883]}>
             <Popup>
               A pretty CSS3 popup. <br /> Easily customizable.
             </Popup>
           </Marker>
         </MapContainer>
-        
-      </div>
-      
+      </div>}
+      {showResult && <TrafficMap/>}
     </div>
   );
 }
