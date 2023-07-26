@@ -4,7 +4,7 @@ import './css/App.css';
 // import TrafficMap from './TrafficMap'
 import './css/traffic.css'
 import {MapContainer, TileLayer, Marker, Popup} from 'react-leaflet'
-import TrafficMap from './TrafficMap';
+import Alerts from './Alerts';
 
 function App() {
   // const position = [51.505, -0.09]
@@ -56,7 +56,7 @@ function App() {
           </Marker>
         </MapContainer>
       </div>}
-      {showResult && <TrafficMap/>}
+      {showResult && <Alerts/>}
     </div>
   );
 }
