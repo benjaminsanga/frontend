@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import Alerts from "./Alerts";
 
 const TrafficMap = () => {
   // State to store traffic data
@@ -60,7 +61,7 @@ const TrafficMap = () => {
 
   return (
     <>
-    <h4>Search Result</h4>
+    <Alerts/>
     <MapContainer center={mapCenter} zoom={zoomLevel} style={{ height: "500px" }}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

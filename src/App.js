@@ -1,62 +1,69 @@
-import { useState } from 'react';
-import axios from 'axios';
-import './css/App.css';
-// import TrafficMap from './TrafficMap'
-import './css/traffic.css'
-import {MapContainer, TileLayer, Marker, Popup} from 'react-leaflet'
-import Alerts from './Alerts';
+import React, { useState } from 'react';
+import { MapContainer, TileLayer, useMap, Marker, Popup, useMapEvents } from 'react-leaflet';
+import 'leaflet-routing-machine';
+import '../node_modules/leaflet/dist/leaflet.css';
+import '../node_modules/leaflet-routing-machine/dist/leaflet-routing-machine.css';
+import L from 'leaflet';
 
-function App() {
-  // const position = [51.505, -0.09]
-  const [from, setFrom] = useState('')
-  const [to, setTo] = useState('')
-  const [showResult, setShowResult] = useState(false)
+// Import the default marker icon
+import icon from '../node_modules/leaflet/dist/images/marker-icon.png';
+import iconShadow from '../node_modules/leaflet/dist/images/marker-shadow.png';
 
-  const handleSearch = async (e) => {
-    e.preventDefault()
-    try {
-      const response = await axios.post('http://localhost:5000/api/traffic');
-      console.log(response, 'response');
-    } catch (error) {
-      console.error('Error fetching traffic data:', error);
-    }
-    setShowResult(true)
+const RoutingControl = ({ waypoints }) => {
+  const map = useMap();
+  
+  L.Routing.control({
+    waypoints,
+    routeWhileDragging: true,
+    pointMarkerStyle: 'none'
+  }).addTo(map);
+
+  return null;
+};
+
+const App = () => {
+  const center = [9.876727859076858, 8.873587189206491]; // Default initial position
+  const [startPosition, setStartPosition] = useState(L.latLng(9.876727859076858, 8.873587189206491))
+  const [endPosition, setEndPosition] = useState(L.latLng(9.871016193646259, 8.8864882500652))
+  
+  function MyComponent() {
+    const map = useMapEvents({
+      click: () => {
+        map.locate()
+      },
+      locationfound: (location) => {
+        console.log(location, 'location');
+        // console.log('latitude:', location.latitude)
+        // console.log('longitude:', location.longitude)
+        // setEndPosition(L.latLng(location.latitude, location.longitude))
+      },
+    })
+    return null
   }
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h3>Traffic Detection System</h3>
-        <a href='/' className='App-link'>Home</a>
-      </header>
-      {!showResult && <div id='main'>
-        <div className='route-form'>
-          <p>Enter your current location and destination</p>
-          <form>
-            <input type='text' placeholder='From' value={from} onChange={(e) => setFrom(e.target.value)} />
-            <input type='text' placeholder='To' value={to} onChange={(e) => setTo(e.target.value)} />
-            <button onClick={handleSearch}>Go</button>
-            <p>Result will show traffic in ride path</p>
-          </form>
-          <hr/>
-          <div>
-            {/* <h4>Results</h4>
-            <p>Results of congestion on path show here after submitting form</p> */}
-          </div>
-        </div>
-        <MapContainer center={[9.8705, 8.8883]} zoom={14} scrollWheelZoom={false} id='map'>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          <Marker position={[9.8705, 8.8883]}>
-            <Popup>
-              A pretty CSS3 popup. <br /> Easily customizable.
-            </Popup>
+      <h3>Traffic Alert System</h3>
+      <p>This system alerts you on time to navigate a route and possible traffic along the route</p> 
+      <MapContainer center={center} zoom={10} style={{ height: '550px', width: '100%' }}>
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+        {[startPosition, endPosition].map((waypoint, index) => (
+          <Marker key={index} position={waypoint} icon={L.icon({ 
+            iconUrl: icon, 
+            shadowUrl: iconShadow,
+            iconSize: [25, 41], // Adjust these values as needed
+            iconAnchor: [12, 41], // Adjust these values as needed
+            popupAnchor: [1, -34], // Adjust these values as needed 
+          })}>
+            <Popup>Waypoint {index + 1}</Popup>
           </Marker>
-        </MapContainer>
-      </div>}
-      {showResult && <Alerts/>}
+        ))}
+        {/* <RoutingControl waypoints={[startPosition, endPosition]} /> */}
+        <MyComponent/>
+      </MapContainer>
     </div>
   );
 }
